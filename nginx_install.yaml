@@ -1,0 +1,65 @@
+---
+- name: Software Installation
+  hosts: ubuntu-grp
+  tasks: 
+    - name: Update Apt Module
+      apt:
+        upgrade= yes
+        update_cache= yes
+    - name: Install Nginx 
+      service:
+         name: nginx
+         state: present
+
+---
+- name: Software Install WO apt update
+  hosts: ubuntu-grp
+  tasks: 
+    - name: Install nginx
+      apt: 
+        name= nginx
+        state= latest
+    - name: start nginx
+      service: 
+         name:nginx
+         state:started
+
+
+---
+- name: Software Installation
+  hosts: ubuntu-grp
+  become: yes  
+  tasks:
+    - name: Update Apt Module
+      apt:
+        upgrade: yes
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start and enable Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+---
+- name: install many  softwares at a time
+  hosts: ubuntu
+  vars:
+    Package_list:
+      - nginx
+      - openjdk-11-jdk
+      - python3
+      - mysql-server
+      - python3-pip
+  tasks: 
+    - name: installing software
+      apt: 
+        name: All packages 
+        state: present
+        update_cache: yes
+      loop: "{{ Package_list }}"
